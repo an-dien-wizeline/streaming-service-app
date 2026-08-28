@@ -44,7 +44,7 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: WARN
         web.access: DEBUG
 stripe:
   api:
