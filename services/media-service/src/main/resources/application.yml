@@ -11,11 +11,11 @@ spring:
     redis:
       host: localhost
       port: 6379
-      password: root
+      password: ${REDIS_PASSWORD:root}
   datasource:
     url: jdbc:postgresql://localhost:5432/media_db
-    username: root
-    password: root
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
     driver-class-name: org.postgresql.Driver
     oracleucp:
       database-name: media_db
@@ -50,10 +50,10 @@ spring:
       properties:
         spring.json.type.mapping: startConvertingMessage:io.github.marianciuc.streamingservice.media.kafka.messages.StartConvertingMessage
 mime:
-  url: http://localhost:9000
-  access-key: uMJS4Vo5jcbBkaoc4fOz
-  secret-key: wbkeLZGbtSqWzzMzzILaCbvooVJokFRjL7wHWtL6
-  bucket-name: media-bucket
+  url: ${MINIO_URL:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}
+  bucket-name: ${MINIO_BUCKET_NAME:media-bucket}
 server:
   port: 8054
 logging:
