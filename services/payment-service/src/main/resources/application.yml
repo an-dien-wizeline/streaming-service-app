@@ -45,7 +45,7 @@ logging:
     org:
       springframework:
         security: INFO
-        web.access: INFO
+        web.access: WARN
 stripe:
   api:
-    key: ${STRIPE_API_KEY}
+    key: ${STRIPE_API_KEY:}
