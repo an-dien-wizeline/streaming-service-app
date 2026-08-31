@@ -51,8 +51,8 @@ spring:
         spring.json.type.mapping: startConvertingMessage:io.github.marianciuc.streamingservice.media.kafka.messages.StartConvertingMessage
 mime:
   url: http://localhost:9000
-  access-key: uMJS4Vo5jcbBkaoc4fOz
-  secret-key: wbkeLZGbtSqWzzMzzILaCbvooVJokFRjL7wHWtL6
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}
   bucket-name: media-bucket
 server:
   port: 8054
