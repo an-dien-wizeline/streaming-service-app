@@ -40,16 +40,16 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
-            log.info("Token: {}", token);
+            log.debug("Processing JWT token");
             Token jwtToken = tokenDeserializer.apply(token);
 
             if (jwtToken != null) {
-                log.info("JwtToken: {}", jwtToken);
+                log.debug("JWT token deserialized successfully");
                 JWTUserPrincipal jwtUserPrincipal = new JWTUserPrincipal(jwtToken);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(jwtUserPrincipal, "", jwtUserPrincipal.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("User authenticated: {}", jwtUserPrincipal);
-                log.info("Security context authentication: {}", SecurityContextHolder.getContext().getAuthentication());
+                log.debug("User authenticated with subject: {}", jwtToken.getSubject());
+                log.debug("Security context authentication set");
             } else {
                 log.warn("Failed to deserialize JWT token");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token");
