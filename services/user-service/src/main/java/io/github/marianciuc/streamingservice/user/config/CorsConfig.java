@@ -16,8 +16,9 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:8222", "http://localhost:8050")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowedHeaders("Content-Type", "Authorization", "X-Requested-With")
+                        .allowCredentials(true)
+                        .maxAge(3600);
             }
         };
     }
