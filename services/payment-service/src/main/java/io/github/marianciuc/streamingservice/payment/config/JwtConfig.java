@@ -32,7 +32,6 @@ public class JwtConfig {
                 .bodyToMono(String.class)
                 .block();
 
-        log.info("Secret: {}", publicKey);
         assert publicKey != null;
 
         RSAKey publicJWK = RSAKey.parse(publicKey);
