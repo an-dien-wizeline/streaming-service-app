@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/payment_db
     username: root
-    password: root
+    password: [redacted]
     driver-class-name: org.postgresql.Driver
     oracleucp:
       database-name: payment_db
@@ -20,7 +20,7 @@ spring:
         default_schema: public
   flyway:
     user: ${spring.datasource.username}
-    password: ${spring.datasource.password}
+    password: [redacted]}
     url: ${spring.datasource.url}
     baseline-on-migrate: true
     enabled: true
@@ -44,8 +44,8 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG
-        web.access: DEBUG
+        security: INFO
+        web.access: INFO
 stripe:
   api:
-    key: sk_test_51MjSvlFARn3daPh2BZK5w2CdwkxDqUcUzgoHW6WYFYCo227NlUr7tQuamhdGkrvHdTmJkS3vqKlfjqRyFciHf0a200l9ciSAhM
+    key: ${STRIPE_API_KEY:[redacted]}
