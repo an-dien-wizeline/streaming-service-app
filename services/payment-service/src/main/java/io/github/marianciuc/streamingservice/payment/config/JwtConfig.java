@@ -32,7 +32,6 @@ public class JwtConfig {
                 .bodyToMono(String.class)
                 .block();
 
-        log.debug("JWT public key retrieved from user-service");
         assert publicKey != null;
 
         RSAKey publicJWK = RSAKey.parse(publicKey);
