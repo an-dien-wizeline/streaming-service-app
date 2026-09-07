@@ -58,11 +58,11 @@ public class RefreshTokenFactory implements AuthenticationTokenFactory {
 
     public RefreshTokenFactory issuer(String issuer) {
         this.issuer = issuer;
-        return null;
+        return this;
     }
 
     public RefreshTokenFactory tokenTtl(Duration tokenTtl) {
         this.tokenTtl = tokenTtl;
-        return null;
+        return this;
     }
 }

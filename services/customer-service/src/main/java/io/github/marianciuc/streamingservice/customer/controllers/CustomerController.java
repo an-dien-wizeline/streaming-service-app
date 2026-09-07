@@ -14,6 +14,7 @@ import io.github.marianciuc.streamingservice.customer.services.impl.CustomerServ
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,7 +48,8 @@ public class CustomerController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> updateCustomerDetails(@RequestBody CustomerDto customerDto) {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #customerDto.id == authentication.principal.id")
+    public ResponseEntity<Void> updateCustomerDetails(@RequestBody CustomerDto customerDto, Authentication authentication) {
         customerServiceImpl.updateCustomerDetails(customerDto);
         return ResponseEntity.ok().build();
     }
