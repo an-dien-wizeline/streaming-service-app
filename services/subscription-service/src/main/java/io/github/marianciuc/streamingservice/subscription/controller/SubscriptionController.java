@@ -95,12 +95,24 @@ public class SubscriptionController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping
+    /**
+     * This endpoint cancels a user's subscription.
+     * Service accounts can cancel any subscription by providing an ID.
+     * Regular users can only cancel their own subscription.
+     *
+     * @param authentication The authentication object containing user details
+     * @param id The UUID of the subscription to cancel (optional, for service accounts)
+     * @return ResponseEntity containing no content
+     */
+    @PostMapping("/cancel")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN') or #id == null")
     public ResponseEntity<Void> cancelSubscription(Authentication authentication, @RequestParam(value = "id", required = false) UUID id) {
         JwtUserDetails jwtUserDetails = (JwtUserDetails) authentication;
         if (jwtUserDetails.isService() && id != null) {
             userSubscriptionService.cancelSubscription(id);
-        } else userSubscriptionService.cancelSubscription(jwtUserDetails);
+        } else {
+            userSubscriptionService.cancelSubscription(jwtUserDetails);
+        }
         return ResponseEntity.ok().build();
     }
 }
