@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -49,6 +51,21 @@ public class PaymentController {
 
     @GetMapping("/card-holder")
     public ResponseEntity<CardHolderDto> getCardHolder(@RequestParam(value = "cardHolderId", required = false) UUID cardHolderId) {
-       return ResponseEntity.ok(cardHolderService.findCardHolder(cardHolderId));
+        // Authorization: only allow users to retrieve their own card holder record
+        Authentication auth = [redacted]
+        String currentUserId = auth.getName();
+        
+        // If cardHolderId is provided, verify it belongs to the current user
+        if (cardHolderId != null) {
+            CardHolderDto cardHolder = cardHolderService.findCardHolder(cardHolderId);
+            // Verify ownership: cardHolder's userId must match the authenticated user
+            if (!cardHolder.getUserId().toString().equals(currentUserId)) {
+                throw new org.springframework.security.access.AccessDeniedException("Access denied: card holder does not belong to the current user");
+            }
+            return ResponseEntity.ok(cardHolder);
+        }
+        
+        // If no cardHolderId provided, return current user's card holder
+        return ResponseEntity.ok(cardHolderService.findCardHolder(null));
     }
 }
