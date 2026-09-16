@@ -97,6 +97,28 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
         }
     }
 
+    /**
+     * Grants a premium subscription tier to a user, upgrading their existing
+     * active subscription in place when one is present.
+     *
+     * @param userId the user receiving the premium tier
+     * @param tierId the premium tier to grant
+     */
+    @Override
+    public void grantPremiumTier(UUID userId, UUID tierId) {
+        Subscription tier = subscriptionService.getSubscription(tierId);
+        Optional<UserSubscriptions> current = repository.findByUserIdAndStatus(userId, SubscriptionStatus.ACTIVE);
+
+        if (current.isPresent()) {
+            UserSubscriptions userSubscriptions = current.get();
+            userSubscriptions.setSubscription(tier);
+            userSubscriptions.setEndDate(LocalDate.now().plusDays(tier.getDurationInDays()));
+            repository.save(userSubscriptions);
+        } else {
+            repository.save(createUserSubscription(tier, userId, UUID.randomUUID()));
+        }
+    }
+
     public void cancelSubscription(UserSubscriptions subscription) throws OperationNotSupportedException {
         if (!subscription.getStatus().equals(SubscriptionStatus.CANCELLED)) {
             subscription.setStatus(SubscriptionStatus.CANCELLED);

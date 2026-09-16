@@ -95,6 +95,20 @@ public class SubscriptionController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * This endpoint grants a premium subscription tier to a user.
+     *
+     * @param userId The UUID of the user receiving the premium tier.
+     * @param tierId The UUID of the premium tier to grant.
+     * @return ResponseEntity containing no content
+     */
+    @PostMapping("/premium/grant")
+    public ResponseEntity<Void> grantPremiumTier(@RequestParam("userId") UUID userId,
+                                                 @RequestParam("tierId") UUID tierId) {
+        userSubscriptionService.grantPremiumTier(userId, tierId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping
     public ResponseEntity<Void> cancelSubscription(Authentication authentication, @RequestParam(value = "id", required = false) UUID id) {
         JwtUserDetails jwtUserDetails = (JwtUserDetails) authentication;
