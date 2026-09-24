@@ -51,4 +51,6 @@ public interface UserSubscriptionService {
     List<UserSubscriptions> getAllUserSubscriptionsByStatusAndEndDate(SubscriptionStatus status, LocalDate endDate);
 
     UserSubscriptionDto getActiveSubscription(JwtUserDetails jwtUserDetails, UUID uuid);
+
+    void grantPremiumTier(UUID userId, UUID tierId);
 }
