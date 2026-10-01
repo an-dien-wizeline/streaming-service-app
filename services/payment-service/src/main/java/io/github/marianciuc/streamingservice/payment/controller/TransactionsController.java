@@ -10,17 +10,21 @@ package io.github.marianciuc.streamingservice.payment.controller;
 
 import io.github.marianciuc.streamingservice.payment.dto.common.TransactionDto;
 import io.github.marianciuc.streamingservice.payment.enums.PaymentStatus;
+import io.github.marianciuc.streamingservice.payment.security.SecurityUtils;
 import io.github.marianciuc.streamingservice.payment.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
 
-@RestController("/api/v1/payments/transactions")
+@RestController
+@RequestMapping("/api/v1/payments/transactions")
 @RequiredArgsConstructor
 public class TransactionsController {
     private final TransactionService transactionService;
@@ -33,6 +37,11 @@ public class TransactionsController {
             @RequestParam(value = "status", required = false) PaymentStatus status,
             @RequestParam(value = "userId", required = false) UUID userId
     ) {
-        return ResponseEntity.ok(transactionService.getTransactions(page, size, sort, status, userId));
+        UUID authenticatedUserId = SecurityUtils.extractJwtUserPrincipals().getId();
+        if (userId != null && !userId.equals(authenticatedUserId)) {
+            throw new AccessDeniedException("You can only view your own transactions");
+        }
+        UUID queryUserId = userId != null ? userId : authenticatedUserId;
+        return ResponseEntity.ok(transactionService.getTransactions(page, size, sort, status, queryUserId));
     }
 }
