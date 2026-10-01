@@ -2,12 +2,10 @@ package io.github.marianciuc.streamingservice.payment.config;
 
 
 import com.nimbusds.jose.JWSVerifier;
-import com.stripe.Stripe;
 import io.github.marianciuc.streamingservice.payment.security.AccessJWETokenStringDeserializer;
 import io.github.marianciuc.streamingservice.payment.security.JWTFilter;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,9 +23,9 @@ import org.springframework.security.web.csrf.CsrfFilter;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JWSVerifier verifier, @Value("${stripe.api" +
-            ".key}") String key) throws Exception {
-        Stripe.apiKey = key;
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JWSVerifier verifier) throws Exception {
+        // Stripe API key is automatically initialized from STRIPE_API_KEY environment variable
+        // Do not set Stripe.apiKey in application code to avoid credential exposure
         http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
