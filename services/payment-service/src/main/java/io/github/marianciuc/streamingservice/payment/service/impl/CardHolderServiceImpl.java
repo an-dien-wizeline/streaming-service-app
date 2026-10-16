@@ -25,6 +25,7 @@ import io.github.marianciuc.streamingservice.payment.service.CardHolderService;
 import io.github.marianciuc.streamingservice.payment.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -101,10 +102,27 @@ public class CardHolderServiceImpl implements CardHolderService {
 
     @Override
     public void updateCardHolder(UpdateCardHolderRequest request) {
-        CardHolder cardHolder = this.findCardHolderEntity(((JWTUserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId());
-        if (!request.cardHolderName().isEmpty()) cardHolder.setCardHolderName(request.cardHolderName());
-        if (!request.cardHolderName().isEmpty()) cardHolder.setPhoneNumber(request.phoneNumber());
-        if (!request.cardHolderName().isEmpty()) cardHolder.setEmail(request.email());
+        // Extract authenticated user ID and enforce authorization
+        UUID authenticatedUserId = ((JWTUserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
+        
+        // Verify that the request is for the authenticated user's card holder
+        if (!request.cardHolderId().equals(authenticatedUserId)) {
+            throw new AccessDeniedException("Cannot modify another user's card holder");
+        }
+        
+        CardHolder cardHolder = this.findCardHolderEntity(authenticatedUserId);
+        
+        // Fix logic error: check each field independently
+        if (!request.cardHolderName().isEmpty()) {
+            cardHolder.setCardHolderName(request.cardHolderName());
+        }
+        if (!request.phoneNumber().isEmpty()) {
+            cardHolder.setPhoneNumber(request.phoneNumber());
+        }
+        if (!request.email().isEmpty()) {
+            cardHolder.setEmail(request.email());
+        }
+        
         this.repository.save(cardHolder);
     }
 }

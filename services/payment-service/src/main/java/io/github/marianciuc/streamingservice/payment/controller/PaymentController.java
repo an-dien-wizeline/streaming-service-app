@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,6 +24,7 @@ public class PaymentController {
 
     private final CardHolderService cardHolderService;
     private final AddressService addressService;
+    private final UserService userService;
 
     @PostMapping("/card-holder")
     public ResponseEntity<CardHolderDto> createCardHolder(@Valid @RequestBody CreateCartHolderRequest request) {
@@ -49,6 +51,13 @@ public class PaymentController {
 
     @GetMapping("/card-holder")
     public ResponseEntity<CardHolderDto> getCardHolder(@RequestParam(value = "cardHolderId", required = false) UUID cardHolderId) {
-       return ResponseEntity.ok(cardHolderService.findCardHolder(cardHolderId));
+        // Enforce ownership verification: only allow access to own card holder or admin access
+        UUID requestingUserId = userService.extractUserIdFromAuth();
+        if (cardHolderId != null && !cardHolderId.equals(requestingUserId) && !userService.hasAdminRoles()) {
+            throw new AccessDeniedException("Access denied");
+        }
+        // If no cardHolderId provided, default to requesting user's card holder
+        UUID idToFetch = (cardHolderId != null) ? cardHolderId : requestingUserId;
+        return ResponseEntity.ok(cardHolderService.findCardHolder(idToFetch));
     }
 }
